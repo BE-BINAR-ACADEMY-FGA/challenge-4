@@ -11,8 +11,8 @@ const { CheckPostReq } = require("../middleware/middleware");
 
 router.post("/", CheckPostReq, createUser);
 router.get("/", getAllUser);
-// router.get("/:userId", getUserById);
-// router.put("/:userId", updateUser);
-// router.delete("/:userId", deleteUser);
+router.get("/:userId", getUserById);
+router.put("/:userId", updateUser);
+router.delete("/:userId", deleteUser);
 
 module.exports = router;

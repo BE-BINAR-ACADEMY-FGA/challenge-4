@@ -3,9 +3,12 @@ const Joi = require("joi");
 
 function CheckPostReq(req, res, next) {
   const schema = Joi.object({
-    name: Joi.string().alphanum().max(255).required(),
+    name: Joi.string().max(255).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().alphanum().min(8).required(),
+    password: Joi.string().min(8).required(),
+    identity_type: Joi.string(),
+    identity_number: Joi.string(),
+    address: Joi.string(),
   });
 
   const { error } = schema.validate(req.body);
