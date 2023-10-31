@@ -3,40 +3,20 @@ const { templateResponse } = require("../helpers/template-response");
 const prisma = new PrismaClient();
 
 const createUser = async (req, res) => {
-  const { name, email, password, identity_type, identity_number, address } =
-    req.body;
+  const { name, email, password } = req.body;
   try {
     const user = await prisma.users.create({
       data: {
         name,
         email,
         password,
-        profile: {
-          create: {
-            identity_type,
-            identity_number,
-            address,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        profile: {
-          select: {
-            identity_type: true,
-            identity_number: true,
-            address: true,
-          },
-        },
       },
     });
 
     let resp = templateResponse("success", "User created successfully", user);
     return res.status(201).json(resp);
   } catch (error) {
-    let resp = templateResponse("error", "User creation failed", error.message);
+    let resp = templateResponse("error", "User creation failed", error);
     return res.status(400).json(resp);
   }
 };
@@ -73,13 +53,6 @@ const getUserById = async (req, res) => {
         id: true,
         name: true,
         email: true,
-        profile: {
-          select: {
-            identity_type: true,
-            identity_number: true,
-            address: true,
-          },
-        },
       },
     });
 
