@@ -37,7 +37,32 @@ function CheckPostAccountReq(req, res, next) {
   next();
 }
 
+const CheckDepositWithdraw = (req, res, next) => {
+  const schema = Joi.object({
+    amount: Joi.number().required(),
+  });
+
+  if (req.body.amount <= 0) {
+    let respErr = templateResponse("error", "Amount must be greater than 0");
+    return res.json(respErr);
+  }
+
+  if (req.body.amount !== Number(req.body.amount)) {
+    let respErr = templateResponse("error", "Amount must be a number");
+    return res.json(respErr);
+  }
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    let respErr = templateResponse("error", error.details[0].message);
+    return res.json(respErr);
+  } else {
+    next();
+  }
+};
+
 module.exports = {
   CheckPostReq,
   CheckPostAccountReq,
+  CheckDepositWithdraw,
 };

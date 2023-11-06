@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const { templateResponse } = require("../helpers/template-response");
+const { string } = require("joi");
 const prisma = new PrismaClient();
 
 const createBankAccount = async (req, res) => {
@@ -162,10 +163,72 @@ const deleteBankAccount = async (req, res) => {
   }
 };
 
+const depositBalance = async (req, res) => {
+  const { accountsId } = req.params;
+  const { amount } = req.body;
+  try {
+    const accounts = await prisma.bank_Account.update({
+      where: {
+        id: Number(accountsId),
+      },
+      data: {
+        balance: {
+          increment: amount,
+        },
+      },
+      select: {
+        id: true,
+        bank_name: true,
+        bank_account_number: true,
+        balance: true,
+        user_id: true,
+      },
+    });
+
+    let resp = templateResponse("success", "Deposit successfully", accounts);
+    return res.status(200).json(resp);
+  } catch (error) {
+    let resp = templateResponse("error", "Not Found", error);
+    return res.status(404).json(resp);
+  }
+};
+
+const withdrawBalance = async (req, res) => {
+  const { accountsId } = req.params;
+  const { amount } = req.body;
+
+  try {
+    const accounts = await prisma.bank_Account.update({
+      where: {
+        id: Number(accountsId),
+      },
+      data: {
+        balance: {
+          decrement: amount,
+        },
+      },
+      select: {
+        id: true,
+        bank_name: true,
+        bank_account_number: true,
+        balance: true,
+        user_id: true,
+      },
+    });
+
+    let resp = templateResponse("success", "Withdraw successfully", accounts);
+    return res.status(200).json(resp);
+  } catch (error) {
+    let resp = templateResponse("error", "Not Found", error);
+    return res.status(404).json(resp);
+  }
+};
 module.exports = {
   createBankAccount,
   getAllBankAccounts,
   getBankAccontById,
   updateBankAccounts,
   deleteBankAccount,
+  depositBalance,
+  withdrawBalance,
 };
